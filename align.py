@@ -9,14 +9,14 @@ Description : Align events in matches with comments
 
 import os
 import re
-import argparse
 from bs4 import BeautifulSoup
 
 
 class Aligner(object):
     """Aligner class."""
     def __init__(self, players_info_path, f13m_dir, f24_dir):
-        """Init Aligner. Note f13m and f24 file' names are conresponding to each other"""
+        """Init Aligner. Note f13m and f24 file' names are
+        conresponding to each other"""
 
         self.players_info_path = os.path.expanduser(players_info_path)
         self.f13m_dir = os.path.expanduser(f13m_dir)
@@ -47,12 +47,12 @@ class Aligner(object):
     def load_f24(f24_file_path):
         """ Load f24 events for one match"""
 
-    with open(f24_file_path) as file_pointer:
-        f24_soup = BeautifulSoup(file_pointer, "lxml")
-        events = f24_soup('event')
+        with open(f24_file_path) as file_pointer:
+            f24_soup = BeautifulSoup(file_pointer, "lxml")
+            events = f24_soup('event')
 
-        for event in events:
-            pass
+            for event in events:
+                pass
 
     @staticmethod
     def load_names(file_path):
