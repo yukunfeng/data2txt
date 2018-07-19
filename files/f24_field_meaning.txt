@@ -1,0 +1,26 @@
+Attribute	period_1_start
+Description	Start time of the first half
+Data type	String
+Values	Dynamic (YYYY-MM-DDThh:mm:ss)
+ 
+Attribute	period_2_start
+Description	Start time of the second half
+Data type	String
+Values	Dynamic (YYYY-MM-DDThh:mm:ss)
+ 
+Attribute	period_3_start
+Description	Start time of the first half of extra time (if applicable)
+Data type	String
+Values	Dynamic (YYYY-MM-DDThh:mm:ss)
+ 
+Attribute	period_4_start
+Description	Start time of the second half of extra time (if applicable)
+Data type	String
+Values	Dynamic (YYYY-MM-DDThh:mm:ss)
+ 
+Attribute	period_5_start
+Description	Start time of the penalty shoot-out (if applicable)
+Data type	String
+Values	Dynamic (YYYY-MM-DDThh:mm:ss)
+assist	Will only appear on an event if this event led directly to a goal	Values	"1"
+keypass	Will only appear on an event if this event led directly to a shot off target, blocked or saved

@@ -1,0 +1,66 @@
+1	Pass	Unsuccessful pass ie pass did not find team mate	Successful pass
+2	Offside Pass	Always set to "1"
+3	Take On	Unsuccessful – player lost possession or was tackled	Successful take on
+4	Foul	Player who committed the foul	Player who was fouled
+5	Out	The team that put the ball out	The team that therefore gained possession
+6	Corner Awarded	The team that conceded the corner	The team that won the corner
+7	Tackle	Unsuccessful attempted tackle/challenge from this team to the team on the ball ie other team retains possession after the challenge	Successful tackle ie challenging player wins possession of the ball from the other team
+8	Interception	Always set to "1"
+9	Turnover	n.a
+10	Save	Always set to "1"
+11	Claim	Keeper drops the ball after an attempted catch from a cross.  The keeper may then pick up the ball again and retain possession, but this would be a separate event	Keeper catches the cross in one attempt ie no drop
+12	Clearance	Always set to "1"
+13	Miss	Always set to "1"
+14	Post	Always set to "1"
+15	Attempt Saved	Always set to "1"
+16	Goal	Always set to "1"
+17	Card	Always set to "1"
+18	Player off	Always set to "1"
+19	player on	Always set to "1"
+20	player retired	Always set to "1"
+21	player returns	Always set to "1"
+22	player becomes goalkeeper	Always set to "1"
+23	Goalkeeper becomes player	Always set to "1"
+24	Condition change	Always set to "1"
+25	Official change	Always set to "1"
+27	Start delay	Always set to "1"
+28	End delay	Always set to "1"
+30	End	Always set to "1"
+32	Start	Always set to "1"
+34	Team set up	Always set to "1"
+35	Player changed position	Always set to "1"
+36	Player changed jersey number	Always set to "1"
+37	Collection end	Always set to "1"
+38	Temp_Goa	Always set to "1"
+39	Temp_Attempt	Always set to "1"
+40	Formation change	Always set to "1"
+41	Punch	Always set to "1"
+42	Good skill	Always set to "1"
+43	Deleted Event	Always set to "1"
+44	Aerial	Player lost aerial duel	Player won the aerial duel
+45	Challenge	Always set to "0" ie. a challenge by definition is unsuccessful and the player does not win the ball (by winning the ball this would be a tackle ie type_id="7")
+47	Rescinded card	Always set to "1"
+49	Ball recovery	Always set to "1"
+50	Dispossessed	Always set to "1"
+52	Keeper pick-up	Always set to "1"
+53	Cross not claimed	Always set to "1"
+54	Smother	Always set to "1"
+55	Offside provoked	Always set to "1"
+51	Error	Always set to "1"
+56	Shield ball opp	Always set to "1"
+57	Foul throw in	Player who conceded the foul throw	Player who won the foul throw
+58	Penalty faced	Always set to "0"
+59	Keeper Sweeper	Goalkeeper comes off the line and clears ball but possession switches to other team (not the same as player clearing ball out of play which is outcome="1")	Goalkeeper comes off the line and either clears ball to another team mate (ie possession retained) or straight out of play
+60	Chance missed	Always set to "0"
+61	Ball touch	Player unsuccessfully controlled the ball ie lost possession	Ball simply hit player unintentionally
+63	Temp_save	Always set to "1"
+64	Resume	 
+65	CRD	 
+66	Possession Data	 
+67	50/50	Player lost 50/50 duel	Player won 50/50 duel
+68	Referee Drop Ball	Always set to "1"
+69	Failed to block	Always set to "1"
+70	Injury Time Announcement	Always set to "1"
+71	Coach Setup	Always set to "1"
+72	Caught offside	Always set to "1"
+73	Other Ball Contact	Always set to "1"
