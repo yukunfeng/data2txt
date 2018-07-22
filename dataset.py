@@ -7,6 +7,7 @@ Email       : yukunfg@gmail.com
 Description : Dataset class using torchtext
 """
 
+from utils.utils import word_ids_to_sentence
 import torchtext
 
 
@@ -19,23 +20,25 @@ def create_soccer_dataset(train_dir, test_dir, valid_dir):
     test_dir = test_dir + "/"
     valid_dir = valid_dir + "/"
 
-    def tokenize(events):
-        """tokenize events"""
-        return events.split()
+    def tokenize(sequence):
+        """tokenize sequence"""
+        return sequence.split()
 
-    EVENTS = torchtext.data.Field(
+    SRC = torchtext.data.Field(
         sequential=True,
         tokenize=tokenize,
         use_vocab=True,
-        lower=True
+        lower=True,
+        include_lengths=True
     )
 
-    COMMENT = torchtext.data.Field(
+    TGT = torchtext.data.Field(
         sequential=True,
         tokenize=tokenize,
-        use_vocab=True
+        use_vocab=True,
+        include_lengths=True
     )
-    soccer_fields = [("events", EVENTS), ("comment", COMMENT)]
+    soccer_fields = [("src", SRC), ("tgt", TGT)]
     train, test, valid = torchtext.datasets.TranslationDataset.splits(
         exts=("src", "tgt"),
         fields=soccer_fields,
@@ -46,10 +49,8 @@ def create_soccer_dataset(train_dir, test_dir, valid_dir):
     )
 
     # Each Field only uses its own column to build vocab
-    COMMENT.build_vocab(train)
-    EVENTS.build_vocab(train)
-    words = EVENTS.vocab.freqs.keys()
-    #  print(len(words))
+    TGT.build_vocab(train)
+    SRC.build_vocab(train)
 
     #  train_iter, val_iter = torchtext.data.Iterator.splits(
     train_iter, val_iter = torchtext.data.BucketIterator.splits(
@@ -57,22 +58,31 @@ def create_soccer_dataset(train_dir, test_dir, valid_dir):
         batch_sizes=(2, 2),
         device="cpu",
         sort_within_batch=False,
-        sort_key=lambda x: len(x.comment),
+        sort_key=lambda x: len(x.tgt),
         repeat=False
     )
     test_iter = None
     
-    return (train_iter, test_iter, val_iter)
+    return (SRC, TGT, train_iter, test_iter, val_iter)
 
 
 if __name__ == "__main__":
     #  unit test
     data_dir = "./data_syn"
-    train_iter, test_iter, val_iter = create_soccer_dataset(
+    SRC, TGT, train_iter, test_iter, val_iter = create_soccer_dataset(
         train_dir=f"./{data_dir}/train",
         test_dir=f"./{data_dir}/test",
         valid_dir=f"./{data_dir}/val"
     )
 
-    for train_batch in train_iter:
-        print(train_batch.comment)
+    for counter, batch in enumerate(train_iter, 1):
+        batch_src, src_lengths = batch.src[0], batch.src[1]
+        batch_tgt, tgt_lengths = batch.tgt[0], batch.tgt[1]
+        words_src = word_ids_to_sentence(batch_src, SRC.vocab)
+        words_tgt = word_ids_to_sentence(batch_tgt, TGT.vocab)
+        print("")
+        print(f"{counter}-th batch size")
+        print(f"words_src: {words_src}") 
+        print(f"words_src real lengths: {src_lengths}")
+        print(f"words_tgt: {words_tgt}") 
+        print(f"words_tgt real lengths: {tgt_lengths}")
