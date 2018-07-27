@@ -13,6 +13,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from dataset import create_soccer_dataset
+from masked_cross_entropy import masked_cross_entropy
 from utils.utils import get_logger
 from onmt.decoders.decoder import StdRNNDecoder
 from onmt.encoders.encoder import RNNEncoder
@@ -67,8 +68,24 @@ def train(opt, logger=None):
         multigpu=False
     ).to(device)
 
-    criterion = nn.CrossEntropyLoss()
     optimizer = optim.SGD(model.parameters(), lr=float(opt.lr))
+
+    def evaluation(data_iter):
+        """do evaluation on data_iter
+        return: average_word_loss"""
+        model.eval()
+        with torch.no_grad():
+            eval_total_loss = 0
+            for batch_count, batch in enumerate(data_iter, 1):
+                src, src_lengths = batch.src[0], batch.src[1]
+                tgt, tgt_lengths = batch.tgt[0], batch.tgt[1]
+                src = src.to(device)
+                tgt = tgt.to(device)
+                decoder_outputs, attns, dec_state = \
+                    model(src, tgt, src_lengths)
+                loss = masked_cross_entropy(decoder_outputs, tgt, tgt_lengths)
+                eval_total_loss += loss.item()
+            return (eval_total_loss / batch_count)
 
     # Start training
     for epoch in range(1, int(opt.epoch) + 1):
@@ -76,7 +93,7 @@ def train(opt, logger=None):
         # Turn on training mode which enables dropout.
         model.train()
         total_loss = 0
-        for batch in train_iter:
+        for batch_count, batch in enumerate(train_iter, 1):
             optimizer.zero_grad()
 
             src, src_lengths = batch.src[0], batch.src[1]
@@ -88,6 +105,26 @@ def train(opt, logger=None):
             tgt_lengths = tgt_lengths.to(device)
             decoder_outputs, attns, dec_state = \
                 model(src, tgt, src_lengths)
+            loss = masked_cross_entropy(decoder_outputs, tgt, tgt_lengths)
+            loss.backward()
+            total_loss += loss.item()
+            optimizer.step()
+
+        # All xx_loss means loss per word on xx dataset
+        train_loss = total_loss / batch_count
+        # Doing validation
+        val_loss = evaluation(val_iter)
+
+        elapsed = time.time() - start_time
+        start_time = time.time()
+
+        if logger:
+            logger.info('| epoch {:3d} | train_loss {:5.2f} '
+                        '| val_loss {:8.2f} | time {:5.1f}s'.format(
+                            epoch,
+                            train_loss,
+                            val_loss,
+                            elapsed))
 
 
 if __name__ == "__main__":
