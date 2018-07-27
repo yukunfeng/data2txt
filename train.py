@@ -40,7 +40,7 @@ def train(opt, logger=None):
 
     # Create dataset iterator
     data_dir = "./data_syn"
-    train_iter, test_iter, val_iter = create_soccer_dataset(
+    SRC, TGT, train_iter, test_iter, val_iter = create_soccer_dataset(
         train_dir=f"./{data_dir}/train",
         test_dir=f"./{data_dir}/test",
         valid_dir=f"./{data_dir}/val"
@@ -48,17 +48,17 @@ def train(opt, logger=None):
     device = torch.device(opt.device)
 
     encoder = RNNEncoder(
-        rnn_type="GRU", bidirectional=False,
-        num_layers=1, vocab_size=10,
-        word_dim=5, hidden_size=10
+        rnn_type=opt.rnn_type, bidirectional=opt.bidirectional,
+        num_layers=opt.num_layers, vocab_size=len(SRC.vocab.freqs.keys()),
+        word_dim=opt.src_wd_dim, hidden_size=opt.hidden_size
     ).to(device)
 
-    decoder_emb = nn.Embedding(100, 20)
+    decoder_emb = nn.Embedding(opt.src_wd_dim, opt.hidden_size)
     decoder = StdRNNDecoder(
-        rnn_type="GRU",
-        bidirectional_encoder=False,
-        num_layers=1,
-        hidden_size=30,
+        rnn_type=opt.rnn_type,
+        bidirectional_encoder=opt.bidirectional,
+        num_layers=opt.num_layers,
+        hidden_size=opt.hidden_size,
         embeddings=decoder_emb
     ).to(device)
 
@@ -125,6 +125,13 @@ def train(opt, logger=None):
                             train_loss,
                             val_loss,
                             elapsed))
+
+        # Saving model
+        if epoch % opt.every_n_epoch_save == 0:
+            if logger:
+                logger.info("start to save model on {}".format(opt.save))
+            with open(opt.save, 'wb') as save_fh:
+                torch.save(model, save_fh)
 
 
 if __name__ == "__main__":
