@@ -63,18 +63,16 @@ def create_soccer_dataset(opt):
         validation=valid_dir,
         test=test_dir
     )
-
     # Each Field only uses its own column to build vocab
     TGT.build_vocab(train)
     SRC.build_vocab(train)
 
-    #  train_iter, val_iter = torchtext.data.Iterator.splits(
     train_iter, val_iter = torchtext.data.BucketIterator.splits(
         (train, valid),
         batch_sizes=(opt.batch_size, opt.batch_size),
         device=opt.device,
-        sort_within_batch=False,
-        sort_key=lambda x: len(x.tgt),
+        sort_within_batch=True,
+        sort_key=lambda x: len(x.src),
         repeat=False
     )
     test_iter = None
