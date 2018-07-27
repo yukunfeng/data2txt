@@ -8,6 +8,7 @@ Description : training
 """
 
 import argparse
+import time
 import opts
 import torch
 import torch.nn as nn
@@ -18,7 +19,6 @@ from utils.utils import get_logger
 from onmt.decoders.decoder import StdRNNDecoder
 from onmt.encoders.encoder import RNNEncoder
 from onmt.models.model import NMTModel
-from torch import nn
 
 
 def parse_args():
@@ -39,12 +39,7 @@ def train(opt, logger=None):
     "training process"
 
     # Create dataset iterator
-    data_dir = "./data_syn"
-    SRC, TGT, train_iter, test_iter, val_iter = create_soccer_dataset(
-        train_dir=f"./{data_dir}/train",
-        test_dir=f"./{data_dir}/test",
-        valid_dir=f"./{data_dir}/val"
-    )
+    SRC, TGT, train_iter, test_iter, val_iter = create_soccer_dataset(opt)
     device = torch.device(opt.device)
 
     encoder = RNNEncoder(
@@ -85,7 +80,7 @@ def train(opt, logger=None):
                     model(src, tgt, src_lengths)
                 loss = masked_cross_entropy(decoder_outputs, tgt, tgt_lengths)
                 eval_total_loss += loss.item()
-            return (eval_total_loss / batch_count)
+            return eval_total_loss / batch_count
 
     # Start training
     for epoch in range(1, int(opt.epoch) + 1):

@@ -28,6 +28,9 @@ def preprocess_opts(parser):
     group.add_argument('-batch_size', type=int,
                        default=20,
                        help="batch size")
+    group.add_argument('-train_dir', default="./data/train/", help="train_dir")
+    group.add_argument('-test_dir', default="./data/test/", help="test_dir")
+    group.add_argument('-val_dir', default="./data/val/", help="val_dir")
 
     # Model options
     group = parser.add_argument_group('Model')

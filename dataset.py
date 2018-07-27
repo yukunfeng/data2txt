@@ -7,18 +7,34 @@ Email       : yukunfg@gmail.com
 Description : Dataset class using torchtext
 """
 
+import argparse
 from utils.utils import word_ids_to_sentence
+import opts
 import torchtext
 
 
-def create_soccer_dataset(train_dir, test_dir, valid_dir):
+def parse_args():
+    """ Parsing arguments """
+    parser = argparse.ArgumentParser(
+        description='preprocess.py',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    opts.preprocess_opts(parser)
+
+    opt = parser.parse_args()
+    #  torch.manual_seed(opt.seed)
+
+    return opt
+
+
+def create_soccer_dataset(opt):
     """create soccer dataset.
     :returns: iterators for train, test and valid dataset
 
     """
-    train_dir = train_dir + "/"
-    test_dir = test_dir + "/"
-    valid_dir = valid_dir + "/"
+    train_dir = opt.train_dir + "/"
+    test_dir = opt.test_dir + "/"
+    valid_dir = opt.val_dir + "/"
 
     def tokenize(sequence):
         """tokenize sequence"""
@@ -55,8 +71,8 @@ def create_soccer_dataset(train_dir, test_dir, valid_dir):
     #  train_iter, val_iter = torchtext.data.Iterator.splits(
     train_iter, val_iter = torchtext.data.BucketIterator.splits(
         (train, valid),
-        batch_sizes=(2, 2),
-        device="cpu",
+        batch_sizes=(opt.batch_size, opt.batch_size),
+        device=opt.device,
         sort_within_batch=False,
         sort_key=lambda x: len(x.tgt),
         repeat=False
@@ -69,11 +85,8 @@ def create_soccer_dataset(train_dir, test_dir, valid_dir):
 if __name__ == "__main__":
     #  unit test
     data_dir = "./data_syn"
-    SRC, TGT, train_iter, test_iter, val_iter = create_soccer_dataset(
-        train_dir=f"./{data_dir}/train",
-        test_dir=f"./{data_dir}/test",
-        valid_dir=f"./{data_dir}/val"
-    )
+    opt = parse_args()
+    SRC, TGT, train_iter, test_iter, val_iter = create_soccer_dataset(opt)
 
     for counter, batch in enumerate(train_iter, 1):
         batch_src, src_lengths = batch.src[0], batch.src[1]
