@@ -8,6 +8,7 @@ Description : Dataset class using torchtext
 """
 
 import argparse
+import string
 from utils.utils import word_ids_to_sentence
 import opts
 import torchtext
@@ -38,7 +39,9 @@ def create_soccer_dataset(opt):
 
     def tokenize(sequence):
         """tokenize sequence"""
-        return sequence.split()
+        tok_list = sequence.split()
+        tok_list = [x for x in tok_list if x not in string.punctuation]
+        return tok_list
 
     SRC = torchtext.data.Field(
         sequential=True,
@@ -52,7 +55,9 @@ def create_soccer_dataset(opt):
         sequential=True,
         tokenize=tokenize,
         use_vocab=True,
-        include_lengths=True
+        include_lengths=True,
+        init_token='<s>',
+        eos_token='</s>'
     )
     soccer_fields = [("src", SRC), ("tgt", TGT)]
     train, test, valid = torchtext.datasets.TranslationDataset.splits(
@@ -97,3 +102,4 @@ if __name__ == "__main__":
         print(f"words_src real lengths: {src_lengths}")
         print(f"words_tgt: {words_tgt}") 
         print(f"words_tgt real lengths: {tgt_lengths}")
+        break

@@ -18,6 +18,11 @@ class NMTModel(nn.Module):
         super(NMTModel, self).__init__()
         self.encoder = encoder
         self.decoder = decoder
+        # out is connected to the decoder
+        self.out = nn.Linear(
+            self.decoder.hidden_size,
+            self.decoder.embeddings.weight.size(0)
+        )
 
     def forward(self, src, tgt, lengths, dec_state=None):
         """Forward propagate a `src` and `tgt` pair for training.
@@ -54,4 +59,12 @@ class NMTModel(nn.Module):
             # Not yet supported on multi-gpu
             dec_state = None
             attns = None
-        return decoder_outputs, attns, dec_state
+
+        # Compute the input of softmax
+        out = self.out(decoder_outputs.view(-1, self.decoder.hidden_size))
+        out = out.view(
+            decoder_outputs.size(0),
+            decoder_outputs.size(1),
+            -1
+        )
+        return out, attns, dec_state

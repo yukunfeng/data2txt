@@ -48,7 +48,7 @@ def train(opt, logger=None):
         word_dim=opt.src_wd_dim, hidden_size=opt.hidden_size
     ).to(device)
 
-    decoder_emb = nn.Embedding(opt.src_wd_dim, opt.hidden_size)
+    decoder_emb = nn.Embedding(len(TGT.vocab.freqs.keys()), opt.src_wd_dim)
     decoder = StdRNNDecoder(
         rnn_type=opt.rnn_type,
         bidirectional_encoder=opt.bidirectional,
@@ -93,14 +93,18 @@ def train(opt, logger=None):
 
             src, src_lengths = batch.src[0], batch.src[1]
             tgt, tgt_lengths = batch.tgt[0], batch.tgt[1]
-
+            print(f"batch: {batch_count}")
+            print(src_lengths)
+            print(tgt_lengths)
             src = src.to(device)
             tgt = tgt.to(device)
             src_lengths = src_lengths.to(device)
             tgt_lengths = tgt_lengths.to(device)
             decoder_outputs, attns, dec_state = \
                 model(src, tgt, src_lengths)
-            loss = masked_cross_entropy(decoder_outputs, tgt, tgt_lengths)
+            # Note tgt[1:] excludes the start token
+            # and shif one position for input
+            loss = masked_cross_entropy(decoder_outputs, tgt[1:], tgt_lengths)
             loss.backward()
             total_loss += loss.item()
             optimizer.step()

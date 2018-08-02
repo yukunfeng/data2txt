@@ -124,7 +124,8 @@ class RNNDecoderBase(nn.Module):
         # Check
         assert isinstance(state, RNNDecoderState)
         # tgt.size() returns tgt length and batch
-        _, tgt_batch, _ = tgt.size()
+        #  _, tgt_batch, _ = tgt.size()
+        _, tgt_batch = tgt.size()
         _, memory_batch, _ = memory_bank.size()
         aeq(tgt_batch, memory_batch)
         # END
@@ -223,7 +224,8 @@ class StdRNNDecoder(RNNDecoderBase):
             rnn_output, decoder_final = self.rnn(emb, state.hidden)
 
         # Check
-        tgt_len, tgt_batch, _ = tgt.size()
+        #  tgt_len, tgt_batch, _ = tgt.size()
+        tgt_len, tgt_batch = tgt.size()
         output_len, output_batch, _ = rnn_output.size()
         aeq(tgt_len, output_len)
         aeq(tgt_batch, output_batch)
