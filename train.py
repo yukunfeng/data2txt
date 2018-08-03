@@ -44,11 +44,11 @@ def train(opt, logger=None):
 
     encoder = RNNEncoder(
         rnn_type=opt.rnn_type, bidirectional=opt.bidirectional,
-        num_layers=opt.num_layers, vocab_size=len(SRC.vocab.freqs.keys()),
+        num_layers=opt.num_layers, vocab_size=len(SRC.vocab.itos),
         word_dim=opt.src_wd_dim, hidden_size=opt.hidden_size
     ).to(device)
 
-    decoder_emb = nn.Embedding(len(TGT.vocab.freqs.keys()), opt.src_wd_dim)
+    decoder_emb = nn.Embedding(len(TGT.vocab.itos), opt.src_wd_dim)
     decoder = StdRNNDecoder(
         rnn_type=opt.rnn_type,
         bidirectional_encoder=opt.bidirectional,
@@ -93,9 +93,6 @@ def train(opt, logger=None):
 
             src, src_lengths = batch.src[0], batch.src[1]
             tgt, tgt_lengths = batch.tgt[0], batch.tgt[1]
-            print(f"batch: {batch_count}")
-            print(src_lengths)
-            print(tgt_lengths)
             src = src.to(device)
             tgt = tgt.to(device)
             src_lengths = src_lengths.to(device)
