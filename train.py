@@ -78,7 +78,7 @@ def train(opt, logger=None):
                 tgt = tgt.to(device)
                 decoder_outputs, attns, dec_state = \
                     model(src, tgt, src_lengths)
-                loss = masked_cross_entropy(decoder_outputs, tgt, tgt_lengths)
+                loss = masked_cross_entropy(decoder_outputs, tgt[1:], tgt_lengths)
                 eval_total_loss += loss.item()
             return eval_total_loss / batch_count
 
@@ -133,5 +133,5 @@ def train(opt, logger=None):
 if __name__ == "__main__":
     opt = parse_args()
     logger = get_logger(opt.log_file)
-    logger.info("It's a test")
+    logger.info("Start training")
     train(opt, logger)
