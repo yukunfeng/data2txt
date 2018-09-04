@@ -67,7 +67,8 @@ def create_soccer_dataset(opt):
         eos_token='</s>'
     )
     soccer_fields = [("src", SRC), ("tgt", TGT)]
-    train, test, valid = torchtext.datasets.TranslationDataset.splits(
+    # Here the returned order
+    train, valid, test = torchtext.datasets.TranslationDataset.splits(
         exts=("src", "tgt"),
         fields=soccer_fields,
         path="",
